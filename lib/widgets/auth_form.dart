@@ -1,5 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/main_screen.dart';
@@ -20,26 +20,11 @@ class _AuthFormState extends State<AuthForm> {
     final userProvider = Provider.of<User>(context, listen: false);
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      try {
-        userProvider.signIn(_email, _password);
-      } on PlatformException catch (e) {
-        showDialog(
-            context: context,
-            builder: (ctx) {
-              return AlertDialog(
-                title: const Text("ivalid credentials"),
-                content: Text(e.message ?? "something went wrong"),
-                actions: [
-                  TextButton(
-                      onPressed: () {
-                        Navigator.of(ctx).pop();
-                      },
-                      child: const Text("Ok"))
-                ],
-              );
-            });
-      } catch (e) {
-        showDialog(
+try{ 
+     await userProvider.signIn(_email, _password);
+       Navigator.of(context).pushReplacementNamed(MainScreen.routeName);}
+        catch (e) {
+        await showDialog(
             context: context,
             builder: (ctx) {
               return AlertDialog(
@@ -50,12 +35,12 @@ class _AuthFormState extends State<AuthForm> {
                       onPressed: () {
                         Navigator.of(ctx).pop();
                       },
+                      
                       child: const Text("Ok"))
                 ],
               );
             });
       }
-      Navigator.of(context).pushReplacementNamed(MainScreen.routeName);
     }
   }
 
@@ -116,12 +101,11 @@ class _AuthFormState extends State<AuthForm> {
                 onSaved: (newValue) => _password = newValue!,
               ),
             ),
-            
-              FilledButton(
-                  onPressed: () {
-                    login(context);
-                  },
-                  child: const Text("Sign In")),
+            FilledButton(
+                onPressed: () {
+                  login(context);
+                },
+                child: const Text("Sign In")),
           ],
         ),
       ),

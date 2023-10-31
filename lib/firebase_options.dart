@@ -53,10 +53,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDUb_UsqOHitP2eP0XgSwrhphdMK3vWr2E',
-    appId: '1:90202137155:android:8fcf5264243bd094686af6',
-    messagingSenderId: '90202137155',
-    projectId: 'flutter-messenger-cloning',
-    storageBucket: 'flutter-messenger-cloning.appspot.com',
-  );
+      apiKey: 'AIzaSyDUb_UsqOHitP2eP0XgSwrhphdMK3vWr2E',
+      appId: '1:90202137155:android:8fcf5264243bd094686af6',
+      messagingSenderId: '90202137155',
+      projectId: 'flutter-messenger-cloning',
+      storageBucket: 'flutter-messenger-cloning.appspot.com',
+      databaseURL:
+          "https://flutter-messenger-cloning-default-rtdb.europe-west1.firebasedatabase.app");
 }

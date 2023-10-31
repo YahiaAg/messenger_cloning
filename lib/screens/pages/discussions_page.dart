@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:provider/provider.dart';
-import 'package:path/path.dart';
 
+import '../../screens/chat_screen.dart';
 import '../../providers/user.dart';
 import '../../providers/users.dart';
+import '../../widgets/user_badge.dart';
 
 class DiscussionPage extends StatefulWidget {
   const DiscussionPage({super.key});
@@ -14,37 +14,21 @@ class DiscussionPage extends StatefulWidget {
 }
 
 class _DiscussionScreenState extends State<DiscussionPage> {
-  User currentUser = User(uid: '', name: '');
-  var myContacts = {};
+  User currentUser = User(name: "", uid: "");
   @override
   void initState() {
-    super.initState();
-    Future.delayed(Duration.zero).then((_) {
-      Provider.of<User>(context as BuildContext, listen: false).currentUser.then((value) async {
+    Provider.of<User>(context, listen: false).currentUser.then((value) async {
       currentUser = value;
-      final firebaseUser =
-          FirebaseDatabase.instance.ref().child("users").child(currentUser.uid);
-      currentUser = User(
-        name: firebaseUser.child("username").toString(),
-        uid: firebaseUser.child("uid").toString(),
-        profilePicture: Image.network(
-          firebaseUser.child("imageUrl").toString(),
-        ),
-      );
-      myContacts = await firebaseUser.child("contacts").get() as Map;
-
-      print(myContacts);
-      print(firebaseUser.child("contacts").get());
     });
-      
-    });
-    
+    Provider.of<Users>(context, listen: false).fetchAndSetUsers();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
-    final myContacts = Provider.of<Users>(context).users;
+    final users = Provider.of<Users>(context).users;
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -78,10 +62,14 @@ class _DiscussionScreenState extends State<DiscussionPage> {
             height: deviceSize.height * 0.15,
             width: deviceSize.width,
             child: ListView.builder(
+              itemCount: users.length,
               scrollDirection: Axis.horizontal,
               itemBuilder: (ctx, index) {
-                final firstName = myContacts[index].name.split(" ")[0];
-                final lastName = myContacts[index].name.split(" ")[1];
+                final firstName = users[index].name.split(" ")[0];
+                final lastName =
+                    users[index].name.split(" ").length == 1
+                        ? ""
+                        : users[index].name.split(" ")[1];
                 return Padding(
                   padding: EdgeInsets.only(
                     left: deviceSize.width * 0.04,
@@ -90,11 +78,16 @@ class _DiscussionScreenState extends State<DiscussionPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      CircleAvatar(
-                        minRadius: deviceSize.height * 0.03,
-                        backgroundColor: Colors.grey,
-                        foregroundImage:
-                            myContacts[index].profilePicture?.image,
+                      SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: Consumer<User>(
+                          builder: (context, value, child) =>UserBadge(
+                            imageUrl: users[index].profilePicture,
+                            isOnline: users[index].isOnline,
+                          ), 
+                        
+                        ),
                       ),
                       Text(
                         firstName,
@@ -110,21 +103,28 @@ class _DiscussionScreenState extends State<DiscussionPage> {
           ),
           SizedBox(
             //this is a list of discussions
-            height: deviceSize.height * 0.75,
+            height: deviceSize.height * 0.7,
             width: deviceSize.width,
             child: ListView.builder(
-              itemBuilder: (ctx, index) => Material(
+              itemBuilder: (ctx, index) => InkWell(
+                onTap: () => Navigator.of(context).pushNamed(
+                  ChatScreen.routeName,
+                  arguments: users[index].uid,),
                 child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    foregroundImage: myContacts[index].profilePicture?.image,
+                  leading: SizedBox(
+                    height: 50,
+                    width: 50,
+                    child: UserBadge(
+                      imageUrl: users[index].profilePicture,
+                      isOnline: users[index].isOnline,
+                    ),
                   ),
-                  title: Text(myContacts[index].name),
+                  title: Text(users[index].name),
                   subtitle: const Text("lastMessage"),
                   trailing: const Text("lastMessageTime"),
                 ),
               ),
-              itemCount: myContacts.length,
+              itemCount: users.length,
             ),
           )
         ],

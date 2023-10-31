@@ -9,7 +9,8 @@ class MyBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-        iconSize: 26,
+      useLegacyColorScheme: false,
+        iconSize: 28,
         unselectedItemColor: Theme.of(context).colorScheme.secondary,
         selectedItemColor: Theme.of(context).colorScheme.primary,
         currentIndex: index,

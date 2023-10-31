@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "90202137155",
+    "firebase_url": "https://flutter-messenger-cloning-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "flutter-messenger-cloning",
     "storage_bucket": "flutter-messenger-cloning.appspot.com"
   },
@@ -14,7 +15,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "90202137155-8qaar8c69jhjoldulu75gh5h4rdb82il.apps.googleusercontent.com",
+          "client_id": "90202137155-tpjodiu14s1gg65jt4c8oppteqjf8ktj.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

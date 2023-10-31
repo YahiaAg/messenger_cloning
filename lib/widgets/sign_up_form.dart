@@ -29,6 +29,8 @@ class _SignUpFormState extends State<SignUpForm> {
       _formKey.currentState!.save();
       try {
         userProvider.signUp(_email, _password, _username, _userImage);
+        Navigator.of(context).pushReplacementNamed(MainScreen.routeName);
+
       } on PlatformException catch (e) {
         showDialog(
             context: context,
@@ -62,7 +64,6 @@ class _SignUpFormState extends State<SignUpForm> {
               );
             });
       }
-      Navigator.of(context).pushReplacementNamed(MainScreen.routeName);
     }
   }
 
@@ -154,7 +155,7 @@ class _SignUpFormState extends State<SignUpForm> {
                   onPressed: () {
                     login(context);
                   },
-                  child: const Text("Sign In")),
+                  child: const Text("Sign Up")),
               TextButton(
                   onPressed: () {
                     _pickImage();

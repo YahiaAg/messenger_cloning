@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' as firestore;
 
+import 'screens/chat_screen.dart';
 import './providers/user.dart';
 import './screens/main_screen.dart';
 import './providers/users.dart';
@@ -54,14 +56,58 @@ class MyApp extends StatelessWidget {
               surface: Colors.white),
         ),
         home: const MyHomePage(),
-        routes: {MainScreen.routeName: (ctx) => const MainScreen()},
+        routes: {MainScreen.routeName: (ctx) => const MainScreen(),
+        ChatScreen.routeName: (ctx) => const ChatScreen(),
+        },
       ),
     );
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  String uid = "";
+  @override
+  void initState()  {
+    WidgetsBinding.instance.addObserver(this);
+     Provider.of<User>(context, listen: false).currentUser.then((value) => uid=value.uid);
+     
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("state: $state");
+    if (state == AppLifecycleState.resumed) {
+      Provider.of<User>(context, listen: false).makeUserOnline();
+    } else {
+      if (state == AppLifecycleState.paused 
+      || state==AppLifecycleState.inactive
+      || state==AppLifecycleState.hidden) {
+         firestore.FirebaseFirestore.instance
+        .collection("users")
+        .doc(uid)
+        .update({
+      "isOnline": false,
+    });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    Provider.of<User>(context, listen: false).makeUserOffline();
+
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
